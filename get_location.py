@@ -10,6 +10,7 @@ import socket
 import boto3
 import time
 import json
+from urllib2 import urlopen
 
 
 def get_location():
@@ -32,6 +33,7 @@ if __name__ == "__main__":
     time = get_utc_time()
     hostname = str(socket.gethostname())
     plat = platform.platform()
+    ip = urlopen('http://ip.42.pl/raw').read()
 
     # Connect to dynamodb
     client = boto3.client('dynamodb')
@@ -39,7 +41,7 @@ if __name__ == "__main__":
     # Create JSON
     data = {'time': {'S': time}, 'hostname': {'S': hostname},\
         'location': {'SS': [ str(location[0]), str(location[1]) ]},\
-        'platform': {'S': plat}}
+        'platform': {'S': plat}, 'ip': {'S': ip}}
 
     # Update table
     response = client.put_item(TableName='DevLocation', Item=data)
